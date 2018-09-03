@@ -1,5 +1,10 @@
 package cucumber.api;
 
+import io.cucumber.messages.Messages;
+import io.cucumber.messages.Messages.PickleDocString;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTable;
+
 import java.util.List;
 
 /**
@@ -19,12 +24,12 @@ public interface PickleStepTestStep extends TestStep {
      *
      * @return the matched step
      */
-    gherkin.pickles.PickleStep getPickleStep();
+    PickleStep getPickleStep();
 
 
     /**
      * Returns the arguments provided to the step definition.
-     *
+     * <p>
      * For example the step definition <code>Given (.*) pickles</code>
      * when matched with <code>Given 15 pickles</code> will receive
      * as argument <code>"15"</code>
@@ -39,8 +44,15 @@ public interface PickleStepTestStep extends TestStep {
      *
      * @return arguments provided to the gherkin step.
      */
+    PickleDocString getDocStringArgument();
 
-    List<gherkin.pickles.Argument> getStepArgument();
+    /**
+     * Returns arguments provided to the Gherkin step. E.g:
+     * a data table or doc string.
+     *
+     * @return arguments provided to the gherkin step.
+     */
+    PickleTable getDataTableArgument();
 
     /**
      * The line in the feature file defining this step.

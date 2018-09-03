@@ -4,16 +4,17 @@ import cucumber.api.Result;
 import cucumber.api.TestStep;
 import cucumber.api.event.TestCaseFinished;
 import cucumber.api.event.TestCaseStarted;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleTag;
 import io.cucumber.core.event.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 final class TestCase implements cucumber.api.TestCase {
-    private final PickleEvent pickleEvent;
+    private final Pickle pickle;
     private final List<PickleStepTestStep> testSteps;
     private final boolean dryRun;
     private final List<HookTestStep> beforeHooks;
@@ -22,12 +23,12 @@ final class TestCase implements cucumber.api.TestCase {
     public TestCase(List<PickleStepTestStep> testSteps,
                     List<HookTestStep> beforeHooks,
                     List<HookTestStep> afterHooks,
-                    PickleEvent pickleEvent,
+                    Pickle pickle,
                     boolean dryRun) {
         this.testSteps = testSteps;
         this.beforeHooks = beforeHooks;
         this.afterHooks = afterHooks;
-        this.pickleEvent = pickleEvent;
+        this.pickle = pickle;
         this.dryRun = dryRun;
     }
 
@@ -67,38 +68,37 @@ final class TestCase implements cucumber.api.TestCase {
 
     @Override
     public String getName() {
-        return pickleEvent.pickle.getName();
+        return pickle.getName();
     }
 
     @Override
     public String getScenarioDesignation() {
-        return fileColonLine(pickleEvent.pickle.getLocations().get(0)) + " # " + getName();
+        return fileColonLine(pickle.getLocations(0)) + " # " + getName();
     }
 
     @Override
     public String getUri() {
-        return pickleEvent.uri;
+        return pickle.getUri();
     }
 
     @Override
     public int getLine() {
-        return pickleEvent.pickle.getLocations().get(0).getLine();
+        return pickle.getLocations(0).getLine();
     }
 
     public List<Integer> getLines() {
-        List<Integer> lines = new ArrayList<>();
-        for (PickleLocation location : pickleEvent.pickle.getLocations()) {
-            lines.add(location.getLine());
-        }
-        return lines;
+        return pickle.getLocationsList()
+            .stream()
+            .map(Location::getLine)
+            .collect(Collectors.toList());
     }
 
-    private String fileColonLine(PickleLocation location) {
-        return pickleEvent.uri + ":" + location.getLine();
+    private String fileColonLine(Location location) {
+        return pickle.getUri() + ":" + location.getLine();
     }
 
     @Override
     public List<PickleTag> getTags() {
-        return pickleEvent.pickle.getTags();
+        return pickle.getTagsList();
     }
 }

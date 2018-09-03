@@ -1,6 +1,6 @@
 package io.cucumber.core.plugin;
 
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 
 import org.mockito.ArgumentMatcher;
 

@@ -1,19 +1,83 @@
 package io.cucumber.core.model;
 
-import gherkin.ast.GherkinDocument;
+import io.cucumber.core.exception.CucumberException;
+import io.cucumber.core.util.FixJava;
+import io.cucumber.gherkin.SubprocessCucumberMessages;
+import io.cucumber.messages.Messages;
+import io.cucumber.messages.Messages.GherkinDocument;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
-public final class CucumberFeature{
-    private final String uri;
-    private final GherkinDocument gherkinDocument;
-    private final String gherkinSource;
+import static java.util.Collections.singletonList;
 
-    public CucumberFeature(GherkinDocument gherkinDocument, String uri, String gherkinSource) {
+public class CucumberFeature implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private GherkinDocument gherkinDocument;
+    private List<Messages.Pickle> pickles;
+
+    private CucumberFeature(GherkinDocument gherkinDocument, List<Messages.Pickle> pickles) {
         this.gherkinDocument = gherkinDocument;
-        this.uri = uri;
-        this.gherkinSource = gherkinSource;
+        this.pickles = pickles;
+    }
+
+    public static CucumberFeature fromFile(File file) {
+        SubprocessCucumberMessages cucumberMessages = new SubprocessCucumberMessages(singletonList(file.getAbsolutePath()), true, true, true);
+        Messages.GherkinDocument gherkinDocument = null;
+        String gherkinSource = null;
+        List<Messages.Pickle> pickles = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
+        for (Messages.Wrapper wrapper : cucumberMessages.messages()) {
+            if (wrapper.hasGherkinDocument()) {
+                gherkinDocument = wrapper.getGherkinDocument();
+            }
+            if (wrapper.hasSource()) {
+                gherkinSource = wrapper.getSource().getData();
+            }
+            if (wrapper.hasPickle()) {
+                pickles.add(wrapper.getPickle());
+            }
+            if (wrapper.hasAttachment()) {
+                // Parse error
+                wrapper.getAttachment().getData();
+                errorMessages.add(wrapper.getAttachment().getData());
+            }
+        }
+        if (!errorMessages.isEmpty()) {
+            String errorMessage = FixJava.join(errorMessages, "\n") + "\nSource:\n" + gherkinSource;
+            throw new CucumberException(errorMessage);
+        }
+        return new CucumberFeature(gherkinDocument, pickles);
+    }
+
+    public static CucumberFeature fromSourceForTest(final String path, final String source) {
+        try {
+            File tmpFile = File.createTempFile(path, "");
+            tmpFile.deleteOnExit();
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(tmpFile), "UTF-8");
+            writer.write(source);
+            writer.close();
+            CucumberFeature cucumberFeature = fromFile(tmpFile);
+            cucumberFeature.setUri(path);
+            return cucumberFeature;
+        } catch (IOException e) {
+            throw new CucumberException(e);
+        }
+    }
+
+    private void setUri(String uri) {
+        gherkinDocument = gherkinDocument.toBuilder().setUri(uri).build();
+        List<Messages.Pickle> newPickles = new ArrayList<>();
+        for (Messages.Pickle pickle : pickles) {
+            newPickles.add(pickle.toBuilder().setUri(uri).build());
+        }
+        pickles = newPickles;
     }
 
     public GherkinDocument getGherkinFeature() {
@@ -21,11 +85,11 @@ public final class CucumberFeature{
     }
 
     public String getUri() {
-        return uri;
+        return gherkinDocument.getUri();
     }
 
-    public String getGherkinSource() {
-        return gherkinSource;
+    public List<Messages.Pickle> getPickles() {
+        return pickles;
     }
 
     public static class CucumberFeatureUriComparator implements Comparator<CucumberFeature> {

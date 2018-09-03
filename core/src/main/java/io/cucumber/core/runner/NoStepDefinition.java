@@ -2,7 +2,7 @@ package io.cucumber.core.runner;
 
 import io.cucumber.core.backend.StepDefinition;
 import io.cucumber.core.stepexpression.Argument;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 
 import java.util.List;
 

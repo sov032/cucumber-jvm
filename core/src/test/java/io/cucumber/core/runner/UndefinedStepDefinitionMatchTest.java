@@ -1,7 +1,7 @@
 package io.cucumber.core.runner;
 
 import cucumber.api.Scenario;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;

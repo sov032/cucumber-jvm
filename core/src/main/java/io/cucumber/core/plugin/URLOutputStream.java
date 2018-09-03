@@ -1,6 +1,6 @@
 package io.cucumber.core.plugin;
 
-import gherkin.deps.com.google.gson.Gson;
+import io.cucumber.messages.com.google.gson.Gson;
 import io.cucumber.core.util.FixJava;
 
 import java.io.*;

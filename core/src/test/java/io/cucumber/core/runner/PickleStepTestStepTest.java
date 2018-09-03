@@ -6,8 +6,8 @@ import cucumber.api.event.TestCaseEvent;
 import cucumber.api.event.TestStepFinished;
 import cucumber.api.event.TestStepStarted;
 import io.cucumber.core.backend.HookDefinition;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.event.EventBus;
 import org.junit.AssumptionViolatedException;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PickleStepTestStepTest {
-    private PickleEvent pickle = mock(PickleEvent.class);
+    private Pickle pickle = mock(Pickle.class);
     private final TestCase testCase = new TestCase(Collections.<PickleStepTestStep>emptyList(), Collections.<HookTestStep>emptyList(), Collections.<HookTestStep>emptyList(), pickle, false);
     private final EventBus bus = mock(EventBus.class);
     private final Scenario scenario = new Scenario(bus, testCase);

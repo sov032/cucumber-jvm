@@ -5,7 +5,7 @@ import cucumber.api.Result;
 import cucumber.api.event.TestStepFinished;
 import cucumber.api.event.TestStepStarted;
 import io.cucumber.core.backend.HookDefinition;
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 import io.cucumber.core.event.EventBus;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,7 +27,7 @@ public class HookTestStepTest {
         Collections.<PickleStepTestStep>emptyList(),
         Collections.<HookTestStep>emptyList(),
         Collections.<HookTestStep>emptyList(),
-        mock(PickleEvent.class),
+        mock(Pickle.class),
         false
     );
     private final EventBus bus = mock(EventBus.class);

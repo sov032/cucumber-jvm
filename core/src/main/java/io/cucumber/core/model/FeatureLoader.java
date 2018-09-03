@@ -4,8 +4,10 @@ import io.cucumber.core.exception.CucumberException;
 import io.cucumber.core.io.MultiLoader;
 import io.cucumber.core.io.Resource;
 import io.cucumber.core.io.ResourceLoader;
+import io.cucumber.core.util.FixJava;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,12 +38,11 @@ public final class FeatureLoader {
 
     public List<CucumberFeature> load(List<String> featurePaths) {
         final List<CucumberFeature> cucumberFeatures = new ArrayList<CucumberFeature>();
-        final FeatureBuilder builder = new FeatureBuilder(cucumberFeatures);
         for (String featurePath : featurePaths) {
             if (featurePath.startsWith("@")) {
-                loadFromRerunFile(builder, resourceLoader, featurePath.substring(1));
+                loadFromRerunFile(cucumberFeatures, resourceLoader, featurePath.substring(1));
             } else {
-                loadFromFeaturePath(builder, resourceLoader, featurePath, false);
+                loadFromFeaturePath(cucumberFeatures, resourceLoader, featurePath, false);
             }
         }
         Collections.sort(cucumberFeatures, new CucumberFeature.CucumberFeatureUriComparator());
@@ -49,7 +50,7 @@ public final class FeatureLoader {
     }
 
 
-    private void loadFromRerunFile(FeatureBuilder builder, ResourceLoader resourceLoader, String rerunPath) {
+    private void loadFromRerunFile(List<CucumberFeature> builder, ResourceLoader resourceLoader, String rerunPath) {
         for (PathWithLines pathWithLines : loadRerunFile(rerunPath)) {
             loadFromFileSystemOrClasspath(builder, resourceLoader, pathWithLines.path);
         }
@@ -69,6 +70,7 @@ public final class FeatureLoader {
         }
         return featurePaths;
     }
+
     private static String read(Resource resource) {
         try {
             return Encoding.readFile(resource);
@@ -78,7 +80,7 @@ public final class FeatureLoader {
     }
 
 
-    private static void loadFromFileSystemOrClasspath(FeatureBuilder builder, ResourceLoader resourceLoader, String featurePath) {
+    private static void loadFromFileSystemOrClasspath(List<CucumberFeature> builder, ResourceLoader resourceLoader, String featurePath) {
         try {
             loadFromFeaturePath(builder, resourceLoader, featurePath, false);
         } catch (IllegalArgumentException originalException) {
@@ -100,13 +102,20 @@ public final class FeatureLoader {
         }
     }
 
-    private static void loadFromFeaturePath(FeatureBuilder builder, ResourceLoader resourceLoader, String featurePath, boolean failOnNoResource) {
+    private static void loadFromFeaturePath(List<CucumberFeature> cucumberFeatures, ResourceLoader resourceLoader, String featurePath, boolean failOnNoResource) {
         Iterable<Resource> resources = resourceLoader.resources(featurePath, ".feature");
         if (failOnNoResource && !resources.iterator().hasNext()) {
             throw new IllegalArgumentException("No resource found for: " + featurePath);
         }
         for (Resource resource : resources) {
-            builder.parse(resource);
+            // TODO:
+            // cucumberFeatures.add(CucumberFeature.fromFile(new File(featurePath)));
+            try {
+                // Hack for backwards compatibility. This will write the file to a temp file so Gherkin-Go can parse it.
+                cucumberFeatures.add(CucumberFeature.fromSourceForTest(resource.getPath(), FixJava.readReader(new InputStreamReader(resource.getInputStream(), "UTF-8"))));
+            } catch (IOException e) {
+                throw new CucumberException(e);
+            }
         }
     }
 }

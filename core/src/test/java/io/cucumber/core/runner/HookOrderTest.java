@@ -6,12 +6,10 @@ import io.cucumber.core.backend.HookDefinition;
 import io.cucumber.core.event.EventBus;
 import io.cucumber.core.options.RuntimeOptions;
 import io.cucumber.core.runtime.StubStepDefinition;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Argument;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
 import io.cucumber.core.stepexpression.TypeRegistry;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -35,9 +33,9 @@ public class HookOrderTest {
     private final EventBus bus = new TimeServiceEventBus(TimeService.SYSTEM);
 
     private final StubStepDefinition stepDefinition = new StubStepDefinition("pattern1", new TypeRegistry(Locale.ENGLISH));
-    private final PickleStep pickleStep = new PickleStep("pattern1", Collections.<Argument>emptyList(), singletonList(new PickleLocation(2,2)));
-    private final PickleEvent pickleEvent = new PickleEvent("uri",
-        new Pickle("scenario1", ENGLISH, singletonList(pickleStep), Collections.<PickleTag>emptyList(), singletonList(new PickleLocation(1,1))));
+    private final PickleStep pickleStep = PickleStep.newBuilder().setText("pattern1").addLocations(Location.newBuilder().setLine(2).setColumn(2)).build();
+    private final Pickle Pickle = new Pickle("uri",
+        new Pickle("scenario1", ENGLISH, singletonList(pickleStep), Collections.<PickleTag>emptyList(), singletonList(new Location(1, 1))));
 
     @Test
     public void before_hooks_execute_in_order() throws Throwable {
@@ -53,8 +51,8 @@ public class HookOrderTest {
 
             }
         };
-        
-        runnerSupplier.get().runPickle(pickleEvent);
+
+        runnerSupplier.get().runPickle(Pickle);
 
         InOrder inOrder = inOrder(hooks.toArray());
         inOrder.verify(hooks.get(6)).execute(ArgumentMatchers.<Scenario>any());
@@ -81,7 +79,7 @@ public class HookOrderTest {
             }
         };
 
-        runnerSupplier.get().runPickle(pickleEvent);
+        runnerSupplier.get().runPickle(Pickle);
 
         InOrder inOrder = inOrder(hooks.toArray());
         inOrder.verify(hooks.get(6)).execute(ArgumentMatchers.<Scenario>any());
@@ -108,7 +106,7 @@ public class HookOrderTest {
             }
         };
 
-        runnerSupplier.get().runPickle(pickleEvent);
+        runnerSupplier.get().runPickle(Pickle);
 
         InOrder inOrder = inOrder(hooks.toArray());
         inOrder.verify(hooks.get(2)).execute(ArgumentMatchers.<Scenario>any());
@@ -135,7 +133,7 @@ public class HookOrderTest {
             }
         };
 
-        runnerSupplier.get().runPickle(pickleEvent);
+        runnerSupplier.get().runPickle(Pickle);
 
         InOrder inOrder = inOrder(hooks.toArray());
         inOrder.verify(hooks.get(2)).execute(ArgumentMatchers.<Scenario>any());
@@ -168,7 +166,7 @@ public class HookOrderTest {
             }
         };
 
-        runnerSupplier.get().runPickle(pickleEvent);
+        runnerSupplier.get().runPickle(Pickle);
 
         List<HookDefinition> allHooks = new ArrayList<>();
         allHooks.addAll(backend1Hooks);

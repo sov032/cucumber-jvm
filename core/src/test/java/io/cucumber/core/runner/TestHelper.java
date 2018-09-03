@@ -17,16 +17,9 @@ import io.cucumber.core.runtime.FeatureSupplier;
 import io.cucumber.core.runtime.Runtime;
 import io.cucumber.core.runtime.StubStepDefinition;
 import io.cucumber.core.model.CucumberFeature;
-import gherkin.AstBuilder;
-import gherkin.Parser;
-import gherkin.TokenMatcher;
-import gherkin.ast.GherkinDocument;
-import gherkin.pickles.Compiler;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleString;
-import gherkin.pickles.PickleTable;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
 import io.cucumber.core.runtime.TestFeatureSupplier;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.core.stepexpression.TypeRegistry;
@@ -43,12 +36,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static cucumber.api.Result.Type.FAILED;
 import static cucumber.api.Result.Type.PASSED;
 import static cucumber.api.Result.Type.PENDING;
 import static cucumber.api.Result.Type.SKIPPED;
 import static cucumber.api.Result.Type.UNDEFINED;
+import static io.cucumber.messages.Messages.PickleStep.ArgumentCase.ARGUMENT_NOT_SET;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,13 +127,11 @@ public class TestHelper {
         private static void mockSteps(Glue glue, List<CucumberFeature> features,
                                       Map<String, Result> stepsToResult,
                                       final Map<String, String> stepsToLocation) {
-            Compiler compiler = new Compiler();
             TypeRegistry typeRegistry = new TypeRegistry(ENGLISH);
-
             List<PickleStep> steps = new ArrayList<>();
             for (CucumberFeature feature : features) {
-                for (Pickle pickle : compiler.compile(feature.getGherkinFeature())) {
-                    for (PickleStep step : pickle.getSteps()) {
+                for (Pickle pickle : feature.getPickles()) {
+                    for (PickleStep step : pickle.getStepsList()) {
                         if (!containsStep(steps, step)) {
                             steps.add(step);
                         }
@@ -186,24 +179,17 @@ public class TestHelper {
 
 
         private static boolean containsStep(List<PickleStep> steps, PickleStep step) {
-            for (PickleStep definedSteps : steps) {
-                if (definedSteps.getText().equals(step.getText())
-                    && definedSteps.getArgument().size() == step.getArgument().size()
-                ) {
-                    return true;
-                }
-            }
-
-            return false;
+            return steps.stream()
+                .anyMatch(definedStep ->
+                    definedStep.getArgumentCase() == ARGUMENT_NOT_SET &&
+                        Objects.equals(definedStep.getText(), step.getText()));
         }
 
         private static Type[] mapArgumentToTypes(PickleStep step) {
             Type[] types = new Type[0];
-            if (step.getArgument().isEmpty()) {
-                return types;
-            } else if (step.getArgument().get(0) instanceof PickleString) {
+            if (step.hasDocString()) {
                 types = new Type[]{String.class};
-            } else if (step.getArgument().get(0) instanceof PickleTable) {
+            } else if (step.hasDataTable()) {
                 types = new Type[]{DataTable.class};
             }
             return types;
@@ -428,6 +414,7 @@ public class TestHelper {
         public TestHelper build() {
             return this.instance;
         }
+
     }
 
     public static CucumberFeature feature(final String path, final String source) {

@@ -1,7 +1,7 @@
 package io.cucumber.core.filter;
 
 import io.cucumber.core.options.RuntimeOptions;
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ public final class Filters {
         if (!nameFilters.isEmpty()) {
             this.filters.add(new NamePredicate(nameFilters));
         }
-        Map<String, List<Long>> lineFilters = runtimeOptions.getLineFilters();
-        Map<String, List<Long>> rerunlineFilters = rerunFilters.processRerunFiles();
-        for (Map.Entry<String,List<Long>> line: rerunlineFilters.entrySet()) {
+        Map<String, List<Integer>> lineFilters = runtimeOptions.getLineFilters();
+        Map<String, List<Integer>> rerunlineFilters = rerunFilters.processRerunFiles();
+        for (Map.Entry<String,List<Integer>> line: rerunlineFilters.entrySet()) {
             addLineFilters(lineFilters, line.getKey(), line.getValue());
         }
         if (!lineFilters.isEmpty()) {
@@ -37,16 +37,16 @@ public final class Filters {
         }
     }
 
-    public boolean matchesFilters(PickleEvent pickleEvent) {
+    public boolean matchesFilters(Pickle Pickle) {
         for (PicklePredicate filter : filters) {
-            if (!filter.apply(pickleEvent)) {
+            if (!filter.apply(Pickle)) {
                 return false;
             }
         }
         return true;
     }
 
-    private void addLineFilters(Map<String, List<Long>> parsedLineFilters, String key, List<Long> lines) {
+    private void addLineFilters(Map<String, List<Integer>> parsedLineFilters, String key, List<Integer> lines) {
         if (parsedLineFilters.containsKey(key)) {
             parsedLineFilters.get(key).addAll(lines);
         } else {

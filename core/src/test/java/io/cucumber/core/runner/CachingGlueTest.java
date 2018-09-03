@@ -3,9 +3,8 @@ package io.cucumber.core.runner;
 import io.cucumber.core.backend.DuplicateStepDefinitionException;
 import io.cucumber.core.backend.HookDefinition;
 import io.cucumber.core.backend.StepDefinition;
-import gherkin.pickles.Argument;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.stepexpression.ArgumentMatcher;
 import io.cucumber.core.stepexpression.ExpressionArgumentMatcher;
 import io.cucumber.core.stepexpression.StepExpression;
@@ -133,7 +132,7 @@ public class CachingGlueTest {
 
         //check cache
         CachingGlue.CacheEntry entry = glue.matchedStepDefinitionsCache.get(stepText);
-        assertEquals(stepDefinition1,entry.stepDefinition);
+        assertEquals(stepDefinition1, entry.stepDefinition);
 
         PickleStep pickleStep2 = getPickleStep(stepText);
         assertEquals(stepDefinition1, glue.stepDefinitionMatch(featurePath, pickleStep2).getStepDefinition());
@@ -164,14 +163,14 @@ public class CachingGlueTest {
 
             glue.stepDefinitionMatch(featurePath, getPickleStep("pattern1"));
         } catch (AmbiguousStepDefinitionsException e) {
-            assertEquals(2,e.getMatches().size());
+            assertEquals(2, e.getMatches().size());
             ambiguousCalled = true;
         }
         assertTrue(ambiguousCalled);
     }
 
     private static PickleStep getPickleStep(String text) {
-        return new PickleStep(text, Collections.<Argument>emptyList(), Collections.<PickleLocation>emptyList());
+        return PickleStep.newBuilder().setText(text).build();
     }
 
     private static StepDefinition getStepDefinitionMockWithPattern(String pattern) {

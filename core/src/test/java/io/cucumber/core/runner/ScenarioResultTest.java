@@ -3,7 +3,7 @@ package io.cucumber.core.runner;
 import cucumber.api.Result;
 import cucumber.api.event.EmbedEvent;
 import cucumber.api.event.WriteEvent;
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 import io.cucumber.core.event.EventBus;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -29,7 +29,7 @@ public class ScenarioResultTest {
             Collections.<PickleStepTestStep>emptyList(),
             Collections.<HookTestStep>emptyList(),
             Collections.<HookTestStep>emptyList(),
-            mock(PickleEvent.class),
+            mock(Pickle.class),
             false
         )
     );

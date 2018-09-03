@@ -6,7 +6,7 @@ import io.cucumber.core.backend.Backend;
 import io.cucumber.core.event.EventBus;
 import io.cucumber.core.io.ResourceLoader;
 import io.cucumber.core.options.RuntimeOptions;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.runtime.RunnerSupplier;
 import io.cucumber.core.stepexpression.TypeRegistry;
 

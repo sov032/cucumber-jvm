@@ -8,8 +8,8 @@ import cucumber.api.event.EventListener;
 import cucumber.api.event.EventPublisher;
 import cucumber.api.event.TestRunFinished;
 import cucumber.api.event.TestStepFinished;
-import gherkin.deps.com.google.gson.Gson;
-import gherkin.deps.com.google.gson.GsonBuilder;
+import io.cucumber.messages.com.google.gson.Gson;
+import io.cucumber.messages.com.google.gson.GsonBuilder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class PathWithLines {
     private static final Pattern FILE_COLON_LINE_PATTERN = Pattern.compile("^([\\w\\W]*?):([\\d:]+)$");
 
     public final String path;
-    public final List<Long> lines = new ArrayList<Long>();
+    public final List<Integer> lines = new ArrayList<>();
 
     public static boolean hasLineFilters(String pathName) {
         return FILE_COLON_LINE_PATTERN.matcher(pathName).matches();
@@ -25,12 +27,10 @@ public final class PathWithLines {
         }
     }
 
-    private static List<Long> toLongs(String[] strings) {
-        List<Long> result = new ArrayList<Long>();
-        for (String string : strings) {
-            result.add(Long.parseLong(string));
-        }
-        return result;
+    private static List<Integer> toLongs(String[] strings) {
+        return Stream.of(strings)
+            .map(Integer::parseInt)
+            .collect(Collectors.toList());
     }
 
     public String toString() {

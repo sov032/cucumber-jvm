@@ -1,7 +1,7 @@
 package io.cucumber.core.filter;
 
-import gherkin.events.PickleEvent;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.PickleTag;
 import io.cucumber.tagexpressions.Expression;
 import io.cucumber.tagexpressions.TagExpressionParser;
 
@@ -13,8 +13,8 @@ import static java.util.Arrays.asList;
 
 
 public final class TagPredicate implements PicklePredicate {
-    private final List<Expression> expressions = new ArrayList<Expression>();
-    private final List<TagExpressionOld> oldStyleExpressions = new ArrayList<TagExpressionOld>();
+    private final List<Expression> expressions = new ArrayList<>();
+    private final List<TagExpressionOld> oldStyleExpressions = new ArrayList<>();
 
     public TagPredicate(List<String> tagExpressions) {
         if (tagExpressions == null) {
@@ -31,8 +31,8 @@ public final class TagPredicate implements PicklePredicate {
     }
 
     @Override
-    public boolean apply(PickleEvent pickleEvent) {
-        return apply(pickleEvent.pickle.getTags());
+    public boolean apply(Pickle pickle) {
+        return apply(pickle.getTagsList());
     }
 
     public boolean apply(Collection<PickleTag> pickleTags) {

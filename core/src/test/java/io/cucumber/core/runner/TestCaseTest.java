@@ -4,10 +4,10 @@ import cucumber.api.Scenario;
 import cucumber.api.event.TestCaseFinished;
 import cucumber.api.event.TestCaseStarted;
 import io.cucumber.core.backend.HookDefinition;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.event.EventBus;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -117,13 +117,13 @@ public class TestCaseTest {
     }
 
     private TestCase createTestCase(PickleStepTestStep... steps) {
-        return new TestCase(asList(steps), Collections.<HookTestStep>emptyList(), Collections.<HookTestStep>emptyList(), pickleEvent(), false);
+        return new TestCase(asList(steps), Collections.<HookTestStep>emptyList(), Collections.<HookTestStep>emptyList(), Pickle(), false);
     }
 
-    private PickleEvent pickleEvent() {
+    private Pickle Pickle() {
         Pickle pickle = mock(Pickle.class);
-        when(pickle.getLocations()).thenReturn(singletonList(new PickleLocation(1, 1)));
-        return new PickleEvent("uri", pickle);
+        when(pickle.getLocations()).thenReturn(singletonList(new Location(1, 1)));
+        return new Pickle("uri", pickle);
     }
 
 }

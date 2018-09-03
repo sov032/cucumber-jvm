@@ -1,11 +1,11 @@
 package io.cucumber.core.stepexpression;
 
-import gherkin.pickles.PickleCell;
-import gherkin.pickles.PickleRow;
-import gherkin.pickles.PickleTable;
+import io.cucumber.messages.Messages.PickleTable;
+import io.cucumber.messages.Messages.PickleTableCell;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 final class PickleTableConverter {
 
@@ -14,14 +14,10 @@ final class PickleTableConverter {
     }
 
     static List<List<String>> toTable(PickleTable pickleTable) {
-        List<List<String>> table = new ArrayList<List<String>>();
-        for (PickleRow pickleRow : pickleTable.getRows()) {
-            List<String> row = new ArrayList<String>();
-            for (PickleCell pickleCell : pickleRow.getCells()) {
-                row.add(pickleCell.getValue());
-            }
-            table.add(row);
-        }
-        return table;
+        return pickleTable.getRowsList().stream()
+            .map(row -> row.getCellsList().stream())
+            .map(row -> row.map(PickleTableCell::getValue))
+            .map(values -> values.collect(toList()))
+            .collect(toList());
     }
 }

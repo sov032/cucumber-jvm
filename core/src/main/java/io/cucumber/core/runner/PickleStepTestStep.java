@@ -1,8 +1,12 @@
 package io.cucumber.core.runner;
 
+import cucumber.api.Argument;
 import cucumber.api.TestCase;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages;
+import io.cucumber.messages.Messages.PickleDocString;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.event.EventBus;
+import io.cucumber.messages.Messages.PickleTable;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +73,7 @@ final class PickleStepTestStep extends TestStep implements cucumber.api.PickleSt
 
     @Override
     public int getStepLine() {
-        return step.getLocations().get(step.getLocations().size() - 1).getLine();
+        return step.getLocations(step.getLocationsList().size() - 1).getLine();
     }
 
     @Override
@@ -78,13 +82,18 @@ final class PickleStepTestStep extends TestStep implements cucumber.api.PickleSt
     }
 
     @Override
-    public List<cucumber.api.Argument> getDefinitionArgument() {
+    public List<Argument> getDefinitionArgument() {
         return DefinitionArgument.createArguments(definitionMatch.getArguments());
     }
 
     @Override
-    public List<gherkin.pickles.Argument> getStepArgument() {
-        return step.getArgument();
+    public PickleDocString getDocStringArgument() {
+        return step.getDocString();
+    }
+
+    @Override
+    public PickleTable getDataTableArgument() {
+        return step.getDataTable();
     }
 
     @Override

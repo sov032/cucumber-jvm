@@ -1,7 +1,7 @@
 package io.cucumber.core.backend;
 
 import cucumber.api.SnippetType;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 
 import java.util.List;
 

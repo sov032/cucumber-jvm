@@ -3,7 +3,7 @@ package io.cucumber.core.runtime;
 import io.cucumber.core.backend.StepDefinition;
 import io.cucumber.core.stepexpression.TypeRegistry;
 import io.cucumber.core.stepexpression.Argument;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.core.stepexpression.ArgumentMatcher;
 import io.cucumber.core.stepexpression.ExpressionArgumentMatcher;
 import io.cucumber.core.stepexpression.StepExpression;

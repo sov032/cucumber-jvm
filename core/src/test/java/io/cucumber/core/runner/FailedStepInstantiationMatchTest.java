@@ -1,8 +1,8 @@
 package io.cucumber.core.runner;
 
 import cucumber.api.Scenario;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class FailedStepInstantiationMatchTest {
 
     @Before
     public void create_match() {
-        PickleLocation location = mock(PickleLocation.class);
+        Location location = mock(Location.class);
         when(location.getLine()).thenReturn(1);
         PickleStep step = mock(PickleStep.class);
         when(step.getLocations()).thenReturn(asList(location));

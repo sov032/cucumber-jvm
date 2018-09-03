@@ -6,7 +6,7 @@ import io.cucumber.core.runner.TimeServiceEventBus;
 import io.cucumber.core.event.EventBus;
 import io.cucumber.core.runner.TimeServiceStub;
 import io.cucumber.core.model.CucumberFeature;
-import gherkin.pickles.PickleLocation;
+import io.cucumber.messages.Messages.Location;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -138,11 +138,11 @@ public class UndefinedStepsTrackerTest {
         assertEquals("[Допустим ^Б$]", tracker.getSnippets().toString());
     }
 
-    private List<PickleLocation> locations(int line) {
-        return asList(new PickleLocation(line, 0));
+    private List<Location> locations(int line) {
+        return asList(new Location(line, 0));
     }
 
-    private List<PickleLocation> locations() {
+    private List<Location> locations() {
         return Collections.emptyList();
     }
 

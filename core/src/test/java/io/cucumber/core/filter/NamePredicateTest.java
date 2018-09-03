@@ -1,10 +1,10 @@
 package io.cucumber.core.filter;
 
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -19,41 +19,41 @@ import static org.mockito.Mockito.mock;
 public class NamePredicateTest {
     private static final List<PickleStep> NO_STEPS = Collections.emptyList();
     private static final List<PickleTag> NO_TAGS = Collections.emptyList();
-    private static final PickleLocation MOCK_LOCATION = mock(PickleLocation.class);
+    private static final Location MOCK_LOCATION = mock(Location.class);
 
     @Test
     public void anchored_name_pattern_matches_exact_name() {
-        PickleEvent pickleEvent = createPickleWithName("a pickle name");
+        Pickle Pickle = createPickleWithName("a pickle name");
         NamePredicate predicate = new NamePredicate(asList(Pattern.compile("^a pickle name$")));
 
-        assertTrue(predicate.apply(pickleEvent));
+        assertTrue(predicate.apply(Pickle));
     }
 
     @Test
     public void anchored_name_pattern_does_not_match_part_of_name() {
-        PickleEvent pickleEvent = createPickleWithName("a pickle name with suffix");
+        Pickle Pickle = createPickleWithName("a pickle name with suffix");
         NamePredicate predicate = new NamePredicate(asList(Pattern.compile("^a pickle name$")));
 
-        assertFalse(predicate.apply(pickleEvent));
+        assertFalse(predicate.apply(Pickle));
     }
 
     @Test
     public void non_anchored_name_pattern_matches_part_of_name() {
-        PickleEvent pickleEvent = createPickleWithName("a pickle name with suffix");
+        Pickle Pickle = createPickleWithName("a pickle name with suffix");
         NamePredicate predicate = new NamePredicate(asList(Pattern.compile("a pickle name")));
 
-        assertTrue(predicate.apply(pickleEvent));
+        assertTrue(predicate.apply(Pickle));
     }
 
     @Test
     public void wildcard_name_pattern_matches_part_of_name() {
-        PickleEvent pickleEvent = createPickleWithName("a pickleEvent name");
+        Pickle Pickle = createPickleWithName("a Pickle name");
         NamePredicate predicate = new NamePredicate(asList(Pattern.compile("a .* name")));
 
-        assertTrue(predicate.apply(pickleEvent));
+        assertTrue(predicate.apply(Pickle));
     }
 
-    private PickleEvent createPickleWithName(String pickleName) {
-        return new PickleEvent("uri", new Pickle(pickleName, "en", NO_STEPS, NO_TAGS, asList(MOCK_LOCATION)));
+    private Pickle createPickleWithName(String pickleName) {
+        return new Pickle("uri", new Pickle(pickleName, "en", NO_STEPS, NO_TAGS, asList(MOCK_LOCATION)));
     }
 }

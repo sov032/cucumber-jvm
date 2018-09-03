@@ -18,8 +18,8 @@ public final class RerunFilters {
     }
 
 
-    Map<String, List<Long>> processRerunFiles() {
-        final Map<String, List<Long>> lineFilters = new HashMap<String, List<Long>>();
+    Map<String, List<Integer>> processRerunFiles() {
+        final Map<String, List<Integer>> lineFilters = new HashMap<>();
         for (String featurePath : runtimeOptions.getFeaturePaths()) {
             if (featurePath.startsWith("@")) {
                 for (PathWithLines pathWithLines : featureLoader.loadRerunFile(featurePath.substring(1))) {
@@ -30,7 +30,7 @@ public final class RerunFilters {
         return lineFilters;
     }
 
-    private void addLineFilters(Map<String, List<Long>> parsedLineFilters, String key, List<Long> lines) {
+    private void addLineFilters(Map<String, List<Integer>> parsedLineFilters, String key, List<Integer> lines) {
         if (parsedLineFilters.containsKey(key)) {
             parsedLineFilters.get(key).addAll(lines);
         } else {

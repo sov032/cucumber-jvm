@@ -6,12 +6,12 @@ import io.cucumber.core.backend.HookDefinition;
 import io.cucumber.core.backend.Backend;
 import io.cucumber.core.event.EventBus;
 import io.cucumber.core.options.RuntimeOptions;
-import gherkin.events.PickleEvent;
-import gherkin.pickles.Argument;
-import gherkin.pickles.Pickle;
-import gherkin.pickles.PickleLocation;
-import gherkin.pickles.PickleStep;
-import gherkin.pickles.PickleTag;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Argument;
+import io.cucumber.messages.Messages.Pickle;
+import io.cucumber.messages.Messages.Location;
+import io.cucumber.messages.Messages.PickleStep;
+import io.cucumber.messages.Messages.PickleTag;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
@@ -31,9 +31,9 @@ public class HookTest {
     private final static String ENGLISH = "en";
     private final EventBus bus = new TimeServiceEventBus(TimeService.SYSTEM);
     private final RuntimeOptions runtimeOptions = new RuntimeOptions("");
-    private final PickleStep pickleStep = new PickleStep("pattern1", Collections.<Argument>emptyList(), singletonList(new PickleLocation(2, 2)));
-    private final PickleEvent pickleEvent = new PickleEvent("uri",
-        new Pickle("scenario1", ENGLISH, singletonList(pickleStep), Collections.<PickleTag>emptyList(), singletonList(new PickleLocation(1, 1))));
+    private final PickleStep pickleStep = new PickleStep("pattern1", Collections.<Argument>emptyList(), singletonList(new Location(2, 2)));
+    private final Pickle Pickle = new Pickle("uri",
+        new Pickle("scenario1", ENGLISH, singletonList(pickleStep), Collections.<PickleTag>emptyList(), singletonList(new Location(1, 1))));
 
     /**
      * Test for <a href="https://github.com/cucumber/cucumber-jvm/issues/23">#23</a>.
@@ -56,7 +56,7 @@ public class HookTest {
 
         Runner runner = new Runner(bus, Collections.singleton(backend), runtimeOptions);
 
-        runner.runPickle(pickleEvent);
+        runner.runPickle(Pickle);
 
         InOrder inOrder = inOrder(hook, backend);
         inOrder.verify(backend).buildWorld();

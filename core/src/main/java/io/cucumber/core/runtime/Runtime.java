@@ -23,13 +23,13 @@ import io.cucumber.core.io.MultiLoader;
 import io.cucumber.core.io.ResourceLoader;
 import io.cucumber.core.io.ResourceLoaderClassFinder;
 import io.cucumber.core.model.CucumberFeature;
-import io.cucumber.core.model.FeatureCompiler;
 import io.cucumber.core.model.FeatureLoader;
 import io.cucumber.core.options.RuntimeOptions;
-import gherkin.events.PickleEvent;
+import io.cucumber.messages.Messages.Pickle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
@@ -80,20 +80,14 @@ public final class Runtime {
         final StepDefinitionReporter stepDefinitionReporter = plugins.stepDefinitionReporter();
         runnerSupplier.get().reportStepDefinitions(stepDefinitionReporter);
 
-        final FeatureCompiler compiler = new FeatureCompiler();
-        for (CucumberFeature feature : features) {
-            for (final PickleEvent pickleEvent : compiler.compileFeature(feature)) {
-                if (filters.matchesFilters(pickleEvent)) {
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            runnerSupplier.get().runPickle(pickleEvent);
-                        }
-                    });
-                }
-            }
-        }
+        features.stream()
+            .map(CucumberFeature::getPickles)
+            .flatMap(Collection::stream)
+            .filter(filters::matchesFilters)
+            .forEach(pickle -> executor.execute(() -> runnerSupplier.get().runPickle(pickle)));
+
         executor.shutdown();
+
         try {
             //noinspection StatementWithEmptyBody we wait, nothing else
             while (!executor.awaitTermination(1, TimeUnit.DAYS)) ;
@@ -276,7 +270,9 @@ public final class Runtime {
         }
 
         byte exitStatus() {
-            if (results.isEmpty()) { return DEFAULT; }
+            if (results.isEmpty()) {
+                return DEFAULT;
+            }
 
             if (runtimeOptions.isWip()) {
                 return min(results, SEVERITY).is(Result.Type.PASSED) ? ERRORS : DEFAULT;

@@ -4,7 +4,7 @@ import cucumber.api.Scenario;
 import io.cucumber.core.backend.StepDefinition;
 import io.cucumber.core.backend.StepDefinitionMatch;
 import io.cucumber.core.exception.CucumberException;
-import gherkin.pickles.PickleStep;
+import io.cucumber.messages.Messages.PickleStep;
 import io.cucumber.cucumberexpressions.CucumberExpressionException;
 import io.cucumber.datatable.CucumberDataTableException;
 import io.cucumber.datatable.UndefinedDataTableTypeException;
@@ -154,6 +154,6 @@ class PickleStepDefinitionMatch extends Match implements StepDefinitionMatch {
     }
 
     private static int getStepLine(PickleStep step) {
-        return step.getLocations().get(step.getLocations().size() - 1).getLine();
+        return step.getLocations(step.getLocationsCount() - 1).getLine();
     }
 }
